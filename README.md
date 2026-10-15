@@ -1,4 +1,4 @@
-
+﻿
 # RetailFlow
 ### End-to-End Retail Data Engineering Platform
 
@@ -7,6 +7,11 @@ RetailFlow is a multi-source retail data engineering platform designed to ingest
 The project demonstrates practical data engineering using Python, PostgreSQL, Apache Airflow, dbt, Docker and dimensional modelling.
 
 ## Architecture
+
+### Platform Architecture Diagram
+
+![RetailFlow Data Engineering Architecture](docs/architecture/10_retailflow_architecture_diagram.png)
+
 ![alt text](docs/architecture/10_retailflow_architecture_diagram.png)
 
 ```text
@@ -59,19 +64,19 @@ Docker Compose provides the local runtime.
 
 ## Data Engineering Pipeline
 
-### Bronze — Raw Ingestion
+### Bronze â€” Raw Ingestion
 
 The Bronze layer stores ingested source records as Parquet files with pipeline metadata.
 
 Run metadata is used to identify successful ingestion runs.
 
-### Silver — Standardisation and Quality
+### Silver â€” Standardisation and Quality
 
 The Silver layer transforms source records into standardised PostgreSQL tables.
 
 It includes validation, quarantine handling, reconciliation and transactional dataset replacement.
 
-### Gold — Dimensional Warehouse
+### Gold â€” Dimensional Warehouse
 
 The Gold layer provides analytical dimensions and facts.
 
@@ -202,3 +207,4 @@ Additional technical documentation is available in:
 **Core data engineering pipeline implemented and successfully validated locally.**
 
 Further work focuses on production readiness, observability, deployment and automation.
+
