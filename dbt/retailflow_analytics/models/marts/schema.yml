@@ -1,0 +1,180 @@
+
+version: 2
+
+models:
+  - name: mart_daily_sales
+    description: >
+      Daily sales performance by channel. Revenue is calculated
+      after discounts but before refunds and returns. Cancelled
+      e-commerce orders are excluded.
+    columns:
+      - name: date_key
+        description: Calendar date surrogate key in YYYYMMDD format.
+      - name: sales_date
+        description: Business date of the sales activity.
+        data_tests:
+          - not_null
+      - name: sales_channel
+        description: E-commerce or physical-store sales channel.
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ['ECOMMERCE', 'POS']
+      - name: transaction_count
+        description: Number of distinct transactions within the day and channel.
+      - name: units_sold
+        description: Total units sold.
+      - name: gross_revenue
+        description: Revenue before discounts.
+      - name: total_discounts
+        description: Total discounts applied.
+      - name: net_revenue
+        description: Revenue after discounts and before refunds and returns.
+        data_tests:
+          - not_null
+      - name: average_transaction_value
+        description: Net revenue divided by distinct transaction count.
+
+  - name: mart_product_performance
+    description: >
+      Product-level sales performance by channel using the
+      historical product surrogate key to preserve SCD Type 2
+      attribution.
+    columns:
+      - name: product_key
+        description: Historical product dimension surrogate key.
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg_products')
+              field: product_key
+      - name: product_name
+        description: Product name from the associated dimension version.
+      - name: category_name
+        description: Product category.
+      - name: sales_channel
+        description: Sales channel.
+        data_tests:
+          - accepted_values:
+              values: ['ECOMMERCE', 'POS']
+      - name: units_sold
+        description: Total units sold for the product and channel.
+      - name: net_revenue
+        description: Sales revenue after discounts, before returns.
+
+  - name: mart_customer_analytics
+    description: >
+      E-commerce customer purchasing behaviour. Includes
+      customers without purchases and excludes cancelled orders.
+      POS sales are not included because the POS staging model
+      does not contain a customer key.
+    columns:
+      - name: customer_key
+        description: Customer dimension surrogate key.
+        data_tests:
+          - not_null
+          - unique
+      - name: customer_id
+        description: Source-system customer identifier.
+      - name: total_orders
+        description: Number of distinct non-cancelled e-commerce orders.
+      - name: lifetime_revenue
+        description: Observed customer revenue after discounts, before refunds.
+      - name: average_order_value
+        description: Average revenue per non-cancelled order.
+      - name: first_order_at
+        description: Timestamp of the earliest qualifying order.
+      - name: last_order_at
+        description: Timestamp of the latest qualifying order.
+      - name: customer_segment
+        description: Customer category based on observed purchase frequency.
+        data_tests:
+          - accepted_values:
+              values: ['NO_PURCHASE', 'ONE_TIME', 'REPEAT']
+
+  - name: mart_channel_performance
+    description: >
+      Overall sales contribution and transaction metrics for
+      e-commerce and POS channels across the available data.
+      Channel reporting periods may differ.
+    columns:
+      - name: sales_channel
+        description: Sales channel identifier.
+        data_tests:
+          - not_null
+          - unique
+          - accepted_values:
+              values: ['ECOMMERCE', 'POS']
+      - name: active_sales_days
+        description: Number of dates with recorded sales.
+      - name: total_transactions
+        description: Sum of daily distinct transaction counts.
+      - name: net_revenue
+        description: Total revenue after discounts, before returns.
+      - name: revenue_contribution_pct
+        description: Percentage of combined revenue attributable to the channel.
+      - name: discount_rate_pct
+        description: Discounts expressed as a percentage of gross revenue.
+
+  - name: mart_inventory_health
+    description: >
+      Latest inventory snapshot for each product-store combination,
+      enriched with stock thresholds and historical movement activity.
+    columns:
+      - name: product_key
+        description: Product surrogate key.
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg_products')
+              field: product_key
+      - name: store_key
+        description: Store surrogate key.
+        data_tests:
+          - not_null
+      - name: snapshot_timestamp
+        description: Timestamp of the selected latest inventory snapshot.
+      - name: quantity_on_hand
+        description: Units currently recorded in the selected stock snapshot.
+      - name: reorder_level
+        description: Stock threshold used to identify replenishment needs.
+      - name: units_below_reorder_level
+        description: Positive difference between reorder level and stock on hand.
+      - name: stock_status
+        description: HEALTHY, LOW_STOCK or OUT_OF_STOCK.
+        data_tests:
+          - accepted_values:
+              values: ['HEALTHY', 'LOW_STOCK', 'OUT_OF_STOCK']
+      - name: movement_count
+        description: Number of historical inventory movement records.
+      - name: total_movement_units
+        description: Sum of absolute movement quantities, not net stock change.
+
+  - name: mart_supplier_performance
+    description: >
+      Supplier-level delivery volumes, completion rates,
+      punctuality and cancellation metrics.
+    columns:
+      - name: supplier_key
+        description: Supplier dimension surrogate key.
+        data_tests:
+          - not_null
+          - unique
+      - name: supplier_name
+        description: Supplier business name.
+      - name: total_delivery_records
+        description: Total supplier delivery records.
+      - name: completed_deliveries
+        description: Deliveries with an actual delivery date.
+      - name: on_time_deliveries
+        description: Completed deliveries arriving on or before expected date.
+      - name: late_deliveries
+        description: Completed deliveries arriving after expected date.
+      - name: on_time_delivery_rate_pct
+        description: Percentage of completed deliveries arriving on time.
+      - name: delivery_completion_rate_pct
+        description: Percentage of all delivery records marked completed by actual date.
+      - name: cancellation_rate_pct
+        description: Percentage of delivery records with CANCELLED status.
+      - name: average_delay_days
+        description: Average signed delivery delay in days.

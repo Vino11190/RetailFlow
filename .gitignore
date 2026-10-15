@@ -1,0 +1,193 @@
+
+# ============================================================
+# RetailFlow — Enterprise Data Engineering Platform
+# Git Ignore Configuration
+# ============================================================
+
+# ------------------------------------------------------------
+# 1. Environment Variables, Credentials and Secrets
+# ------------------------------------------------------------
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+*.pem
+*.key
+*.p12
+*.pfx
+*.secret
+
+secrets/
+credentials/
+private/
+
+# ------------------------------------------------------------
+# 2. Python Virtual Environments
+# ------------------------------------------------------------
+.venv/
+.venv-*/
+venv/
+env/
+ENV/
+
+# ------------------------------------------------------------
+# 3. Python Cache and Build Files
+# ------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.nox/
+
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# ------------------------------------------------------------
+# 4. Generated Data — Bronze, Silver and Gold
+# ------------------------------------------------------------
+data/bronze/
+data/silver/
+data/gold/
+data/quarantine/
+data/raw/
+data/processed/
+data/staging/
+data/temp/
+data/tmp/
+
+# Large data and database export files
+*.parquet
+*.arrow
+*.feather
+*.orc
+*.avro
+
+*.dump
+*.backup
+*.bak
+*.sql.gz
+
+# ------------------------------------------------------------
+# 5. Apache Airflow Runtime Files
+# ------------------------------------------------------------
+airflow/logs/
+airflow/config/airflow.cfg
+airflow/airflow.db
+airflow/airflow.db-journal
+airflow/standalone_admin_password.txt
+
+# ------------------------------------------------------------
+# 6. dbt Generated Artifacts
+# ------------------------------------------------------------
+**/target/
+**/dbt_packages/
+**/logs/
+
+# ------------------------------------------------------------
+# 7. PostgreSQL and Local Database Files
+# ------------------------------------------------------------
+*.db
+*.sqlite
+*.sqlite3
+
+postgres_data/
+postgres-data/
+pgdata/
+pg_data/
+
+# ------------------------------------------------------------
+# 8. Docker Local Overrides and Runtime Files
+# ------------------------------------------------------------
+docker-compose.override.yml
+compose.override.yml
+
+*.pid
+*.sock
+
+# ------------------------------------------------------------
+# 9. Jupyter Notebook Checkpoints
+# ------------------------------------------------------------
+.ipynb_checkpoints/
+
+# ------------------------------------------------------------
+# 10. IDE and Editor Settings
+# ------------------------------------------------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ------------------------------------------------------------
+# 11. Operating System Files
+# ------------------------------------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ------------------------------------------------------------
+# 12. Logs and Temporary Files
+# ------------------------------------------------------------
+*.log
+*.tmp
+*.temp
+*.cache
+
+tmp/
+temp/
+cache/
+
+# ------------------------------------------------------------
+# 13. Local Backups
+# ------------------------------------------------------------
+backups/
+*.zip
+*.7z
+
+# ------------------------------------------------------------
+# 14. Keep Project Source Code and Documentation
+# ------------------------------------------------------------
+# Python source code: tracked
+# SQL scripts: tracked
+# Airflow DAGs: tracked
+# Dockerfiles and Compose configurations: tracked
+# dbt models, macros and tests: tracked
+# YAML configuration templates: tracked
+# Markdown documentation: tracked
+# Architecture diagrams and screenshots: tracked
+# Synthetic sample data can be added selectively later
+
+# ============================================================
+# RetailFlow � Additional Generated Data and Local Configuration
+# ============================================================
+
+# Pipeline execution and validation reports
+data/pipeline_reports/
+data/validation_reports/
+
+# Generated source-system exports
+sources/pos/outbound/
+sources/payments/outbound/
+sources/returns/outbound/
+sources/suppliers/outbound/
+
+# Local dbt user configuration
+**/.user.yml
+
+# Temporary Git audit report
+git_file_audit.txt
+
+# Local environment template backups
+.env.example.backup

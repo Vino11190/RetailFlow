@@ -1,0 +1,27 @@
+
+version: 2
+
+sources:
+  - name: retailflow_gold
+    database: retailflow_warehouse
+    schema: gold
+
+    description: >
+      Existing RetailFlow Gold warehouse tables
+      populated by the Python ETL pipeline.
+
+    tables:
+      - name: dim_customer
+      - name: dim_product
+      - name: dim_date
+      - name: dim_store
+      - name: dim_supplier
+      - name: dim_channel
+
+      - name: fact_ecommerce_sales
+      - name: fact_pos_sales
+      - name: fact_payments
+      - name: fact_returns
+      - name: fact_inventory_snapshot
+      - name: fact_inventory_movements
+      - name: fact_supplier_deliveries

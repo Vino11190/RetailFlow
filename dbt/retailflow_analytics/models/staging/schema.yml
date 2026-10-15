@@ -1,0 +1,77 @@
+
+version: 2
+
+models:
+  - name: stg_customers
+    description: Customer dimension staging model.
+    columns:
+      - name: customer_key
+        data_tests:
+          - not_null
+          - unique
+
+      - name: customer_id
+        data_tests:
+          - not_null
+
+  - name: stg_products
+    description: Product dimension staging model with SCD Type 2 history.
+    columns:
+      - name: product_key
+        data_tests:
+          - not_null
+          - unique
+
+      - name: product_id
+        data_tests:
+          - not_null
+
+      - name: is_current
+        data_tests:
+          - not_null
+
+  - name: stg_ecommerce_sales
+    description: E-commerce sales staging model.
+    columns:
+      - name: sales_key
+        data_tests:
+          - not_null
+          - unique
+
+      - name: order_item_id
+        data_tests:
+          - not_null
+
+      - name: customer_key
+        data_tests:
+          - relationships:
+              to: ref('stg_customers')
+              field: customer_key
+
+      - name: product_key
+        data_tests:
+          - relationships:
+              to: ref('stg_products')
+              field: product_key
+
+      - name: is_non_cancelled_order
+        data_tests:
+          - not_null
+
+  - name: stg_pos_sales
+    description: Point-of-sale staging model.
+    columns:
+      - name: pos_sales_key
+        data_tests:
+          - not_null
+          - unique
+
+      - name: transaction_id
+        data_tests:
+          - not_null
+
+      - name: product_key
+        data_tests:
+          - relationships:
+              to: ref('stg_products')
+              field: product_key
