@@ -12,7 +12,7 @@ The project demonstrates practical data engineering using Python, PostgreSQL, Ap
 
 ![RetailFlow Data Engineering Architecture](docs/architecture/10_retailflow_architecture_diagram.png)
 
-![alt text](docs/architecture/10_retailflow_architecture_diagram.png)
+
 
 ```text
 Retail Source Systems
@@ -207,4 +207,5 @@ Additional technical documentation is available in:
 **Core data engineering pipeline implemented and successfully validated locally.**
 
 Further work focuses on production readiness, observability, deployment and automation.
+
 
