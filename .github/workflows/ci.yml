@@ -233,8 +233,9 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install \
             "pytest==9.1.1" \
-            "psycopg2-binary==2.9.13"
-
+            "psycopg2-binary==2.9.13" \
+            "pandas>=2.2,<3" \
+            "SQLAlchemy>=2.0,<3"
       - name: Initialise warehouse schemas
         shell: bash
         run: |
