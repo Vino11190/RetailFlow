@@ -236,7 +236,22 @@ jobs:
             "psycopg2-binary==2.9.13" \
             "pandas>=2.2,<3" \
             "SQLAlchemy>=2.0,<3" \
-            "pyarrow>=15,<24"
+            "pyarrow>=15,<24" \
+            "python-dotenv>=1.0,<2"
+      - name: Verify Silver integration imports
+        shell: bash
+        run: |
+          python - <<'PY'
+          import pandas
+          import pyarrow
+          import sqlalchemy
+          import psycopg2
+          import dotenv
+          from src.transformations.silver.silver_loader import load_silver_dataset
+          from src.quality.audit_adapter import persist_quality_audit
+          print('PASS: Silver integration imports')
+          PY
+
       - name: Initialise warehouse schemas
         shell: bash
         run: |
