@@ -190,3 +190,73 @@ jobs:
             --no-banner \
             --redact \
             --exit-code 1
+
+  postgres-integration:
+    name: PostgreSQL Integration Tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: retailflow_test
+          POSTGRES_PASSWORD: retailflow_test_local_only
+          POSTGRES_DB: retailflow_integration_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U retailflow_test -d retailflow_integration_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      GITHUB_ACTIONS: "true"
+      RETAILFLOW_TEST_DB_HOST: "127.0.0.1"
+      RETAILFLOW_TEST_DB_PORT: "5432"
+      RETAILFLOW_TEST_DB_NAME: "retailflow_integration_test"
+      RETAILFLOW_TEST_DB_USER: "retailflow_test"
+      RETAILFLOW_TEST_DB_PASSWORD: "retailflow_test_local_only"
+      PGPASSWORD: "retailflow_test_local_only"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install integration test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install \
+            "pytest==9.1.1" \
+            "psycopg2-binary==2.9.13"
+
+      - name: Initialise warehouse schemas
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          for ddl in \
+            warehouse/ddl/01_create_schemas.sql \
+            warehouse/ddl/03_create_foundation_tables.sql \
+            warehouse/ddl/04_create_gold_tables.sql \
+            warehouse/ddl/05_create_silver_tables.sql
+          do
+            echo "Applying $ddl"
+
+            psql \
+              -h 127.0.0.1 \
+              -p 5432 \
+              -U retailflow_test \
+              -d retailflow_integration_test \
+              -X -v ON_ERROR_STOP=1 \
+              -1 -f "$ddl"
+          done
+
+      - name: Run PostgreSQL integration tests
+        run: |
+          python -m pytest tests/integration -v
