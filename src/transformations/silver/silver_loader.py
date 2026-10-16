@@ -22,6 +22,9 @@ from src.transformations.silver.bronze_reader import (
 from src.transformations.silver.cleaner import (
     clean_bronze_dataframe,
 )
+from src.quality.audit_adapter import persist_quality_audit
+from src.quality.gate import evaluate_quality_gate
+from src.quality.scoring import calculate_quality_score
 from src.warehouse.connection import create_warehouse_engine
 
 
@@ -83,6 +86,30 @@ def load_silver_dataset(source_system, dataset_name):
     clean = cleaned["clean"]
     quarantine = cleaned["quarantine"]
     run_id = extracted["pipeline_run_id"]
+
+    # Evaluate quality before opening the Silver load transaction.
+    quality_score = calculate_quality_score(cleaned["metrics"])
+    quality_gate = evaluate_quality_gate(quality_score)
+
+    # Persist quality results before allowing or rejecting Silver loading.
+    audit_engine = create_warehouse_engine()
+
+    try:
+        persist_quality_audit(
+            engine=audit_engine,
+            source_system=source_system,
+            dataset_name=dataset_name,
+            metrics=cleaned["metrics"],
+            score=quality_score,
+        )
+    finally:
+        audit_engine.dispose()
+
+    if not quality_gate.allowed:
+        raise RuntimeError(
+            f"Quality gate rejected {source_system}/{dataset_name}: "
+            f"{quality_gate.message}"
+        )
 
     engine = create_warehouse_engine()
 
